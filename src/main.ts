@@ -5,15 +5,19 @@ import { applyFilters, filterByAuthor, filterByMinYear } from './task3-filters';
 import { createBookFromForm } from './task4-integration';
 import { filterByTitle, sortBooks } from './task5-utils';
 //TODO 3.0: импортируйте BookCatalog из task6
+import { BookCatalog } from './task6';
 
 // TODO 3.1: замените `let catalog: Catalog = {...}` на экземпляр
 // `new BookCatalog([...те же книги...], 'main')`.
 // Тип `Catalog` после замены больше не нужен — уберите импорт.
 
-let catalog: Catalog = {
-  '1': { id: '1', title: 'TypeScript Guide', authors: ['John Doe'], year: 2024 },
-  '2': { id: '2', title: 'JavaScript Basics', authors: ['Jane Smith'], year: 2022 },
-};
+let catalog: BookCatalog = new BookCatalog(
+  [
+    { id: '1', title: 'TypeScript Guide', authors: ['John Doe'], year: 2024 },
+    { id: '2', title: 'JavaScript Basics', authors: ['Jane Smith'], year: 2022 },
+  ],
+  'main'
+);
 
 
 // восстановление из localStorage
@@ -27,7 +31,8 @@ let catalog: Catalog = {
 
 const saved = localStorage.getItem('catalog');
 if (saved) {
-  catalog = JSON.parse(saved) as Catalog;
+  const parsed = JSON.parse(saved) as { books: Book[]; id: string };
+  catalog = new BookCatalog(parsed.books, parsed.id);
 }
 
 
@@ -74,7 +79,7 @@ function renderBooks(books: Book[]) {
     deleteBtn.addEventListener('click', () => {
 
       // TODO 3.3: замените функциональный removeBook на метод класса.      
-      catalog = removeBook(catalog, book.id)
+      catalog.removeBook(book.id);
       saveCatalog();
       // TODO 3.4: замените вызов Object.values(catalog) на метод каталога.
       // Таких мест, где вызывается Object.values(catalog), в файле несколько — найдите все.
